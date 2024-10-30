@@ -3,7 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PhotoGallery.Authentication\PhotoGallery.Authentication.csproj" />
+    <ProjectReference Include="..\PhotoGallery.Contracts\PhotoGallery.Contracts.csproj" />
+  </ItemGroup>
 
 </Project>

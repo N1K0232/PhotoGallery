@@ -3,7 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PhotoGallery.DataAccessLayer\PhotoGallery.DataAccessLayer.csproj" />
+    <ProjectReference Include="..\PhotoGallery.Shared\PhotoGallery.Shared.csproj" />
+    <ProjectReference Include="..\PhotoGallery.StorageProviders\PhotoGallery.StorageProviders.csproj" />
+  </ItemGroup>
 
 </Project>
