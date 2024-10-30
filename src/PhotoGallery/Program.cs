@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Microsoft.OpenApi.Models;
 using MinimalHelpers.Routing;
 using OperationResults.AspNetCore.Http;
 using PhotoGallery.BusinessLayer.Settings;
@@ -48,6 +49,12 @@ if (swagger.Enabled)
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(options =>
     {
+        options.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "PhotoGallery Api",
+            Version = "v1"
+        });
+
         options.AddSimpleAuthentication(builder.Configuration);
         options.AddDefaultResponse();
         options.AddAcceptLanguageHeader();
