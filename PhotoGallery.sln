@@ -3,21 +3,26 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoGallery", "src\PhotoGallery\PhotoGallery.csproj", "{4078043E-5563-4661-8023-2B6F92FFAE69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoGallery", "src\PhotoGallery\PhotoGallery.csproj", "{4078043E-5563-4661-8023-2B6F92FFAE69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoGallery.Authentication", "src\PhotoGallery.Authentication\PhotoGallery.Authentication.csproj", "{FEA73B09-B87B-49BF-9BFF-93FCC32A6ADF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoGallery.Authentication", "src\PhotoGallery.Authentication\PhotoGallery.Authentication.csproj", "{FEA73B09-B87B-49BF-9BFF-93FCC32A6ADF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoGallery.BusinessLayer", "src\PhotoGallery.BusinessLayer\PhotoGallery.BusinessLayer.csproj", "{682C67B7-3708-4165-9C65-9FB48B4EE128}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoGallery.BusinessLayer", "src\PhotoGallery.BusinessLayer\PhotoGallery.BusinessLayer.csproj", "{682C67B7-3708-4165-9C65-9FB48B4EE128}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoGallery.DataAccessLayer", "src\PhotoGallery.DataAccessLayer\PhotoGallery.DataAccessLayer.csproj", "{C2F96841-FD47-4B94-9F36-3EDCC0D62883}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoGallery.DataAccessLayer", "src\PhotoGallery.DataAccessLayer\PhotoGallery.DataAccessLayer.csproj", "{C2F96841-FD47-4B94-9F36-3EDCC0D62883}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoGallery.StorageProviders", "src\PhotoGallery.StorageProviders\PhotoGallery.StorageProviders.csproj", "{19CFD7AF-7A31-4C60-92D3-6739672D6189}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoGallery.StorageProviders", "src\PhotoGallery.StorageProviders\PhotoGallery.StorageProviders.csproj", "{19CFD7AF-7A31-4C60-92D3-6739672D6189}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoGallery.Shared", "src\PhotoGallery.Shared\PhotoGallery.Shared.csproj", "{30E706C5-196E-4FCB-8BA2-F6CD58C0B7A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoGallery.Shared", "src\PhotoGallery.Shared\PhotoGallery.Shared.csproj", "{30E706C5-196E-4FCB-8BA2-F6CD58C0B7A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoGallery.Contracts", "src\PhotoGallery.Contracts\PhotoGallery.Contracts.csproj", "{2BA3F4A4-A68D-49F4-B520-A360492E1F6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoGallery.Contracts", "src\PhotoGallery.Contracts\PhotoGallery.Contracts.csproj", "{2BA3F4A4-A68D-49F4-B520-A360492E1F6C}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "PhotoGallery.Database", "src\PhotoGallery.Database\PhotoGallery.Database.sqlproj", "{058946E7-A750-40C5-9B87-85C632D7C3F6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FCE94A60-6071-4CFE-8A97-B445996B71F5}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
