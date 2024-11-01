@@ -24,12 +24,13 @@ using Serilog;
 using SimpleAuthentication;
 using TinyHelpers.AspNetCore.Extensions;
 using TinyHelpers.AspNetCore.Swagger;
+using TinyHelpers.Extensions;
 using TinyHelpers.Json.Serialization;
 using ResultErrorResponseFormat = OperationResults.AspNetCore.Http.ErrorResponseFormat;
 using ValidationErrorResponseFormat = MinimalHelpers.Validation.ErrorResponseFormat;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddJsonFile("appsettings.local.json", true,)
+builder.Configuration.AddJsonFile("appsettings.local.json", true, true);
 
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
 {
@@ -136,6 +137,23 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
+
+var azureStorageConnectionString = builder.Configuration.GetConnectionString("AzureStorageConnection");
+if (azureStorageConnectionString.HasValue())
+{
+    builder.Services.AddAzureStorage(options =>
+    {
+        options.ConnectionString = azureStorageConnectionString;
+        options.ContainerName = settings.StorageFolder;
+    });
+}
+else
+{
+    builder.Services.AddFileSystemStorage(options =>
+    {
+        options.StorageFolder = settings.StorageFolder;
+    });
+}
 
 builder.Services.Scan(scan => scan.FromAssemblyOf<IdentityService>()
     .AddClasses(classes => classes.InNamespaceOf<IdentityService>())
