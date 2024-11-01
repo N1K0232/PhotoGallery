@@ -1,16 +1,32 @@
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using MinimalHelpers.Routing;
+using MinimalHelpers.Validation;
 using OperationResults.AspNetCore.Http;
+using PhotoGallery.Authentication;
+using PhotoGallery.Authentication.DataProtection;
+using PhotoGallery.Authentication.Entities;
+using PhotoGallery.Authentication.Requirements;
+using PhotoGallery.BusinessLayer.Mapping;
+using PhotoGallery.BusinessLayer.Services;
 using PhotoGallery.BusinessLayer.Settings;
+using PhotoGallery.Contracts;
+using PhotoGallery.DataAccessLayer;
 using PhotoGallery.Extensions;
+using PhotoGallery.Services;
 using PhotoGallery.Swagger;
+using QRCoder;
 using Serilog;
 using SimpleAuthentication;
 using TinyHelpers.AspNetCore.Extensions;
 using TinyHelpers.AspNetCore.Swagger;
 using TinyHelpers.Json.Serialization;
 using ResultErrorResponseFormat = OperationResults.AspNetCore.Http.ErrorResponseFormat;
+using ValidationErrorResponseFormat = MinimalHelpers.Validation.ErrorResponseFormat;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
@@ -19,6 +35,7 @@ builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
 });
 
 var settings = builder.Services.ConfigureAndGet<AppSettings>(builder.Configuration, nameof(AppSettings));
+var email = builder.Services.ConfigureAndGet<EmailSettings>(builder.Configuration, nameof(EmailSettings));
 var swagger = builder.Services.ConfigureAndGet<SwaggerSettings>(builder.Configuration, nameof(SwaggerSettings));
 
 builder.Services.AddHttpContextAccessor();
@@ -30,6 +47,17 @@ builder.Services.AddDefaultProblemDetails();
 builder.Services.AddRazorPages();
 builder.Services.AddWebOptimizer(minifyCss: true, minifyJavaScript: builder.Environment.IsProduction());
 
+builder.Services.AddDataProtection().SetApplicationName(settings.ApplicationName).PersistKeysToDbContext<ApplicationDbContext>();
+builder.Services.AddScoped<IDataProtectionService, DataProtectionService>();
+
+builder.Services.AddScoped(services =>
+{
+    var dataProtectionProvider = services.GetRequiredService<IDataProtectionProvider>();
+    var protector = dataProtectionProvider.CreateProtector(settings.ApplicationName);
+
+    return protector.ToTimeLimitedDataProtector();
+});
+
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
@@ -37,12 +65,20 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+builder.Services.AddAutoMapper(typeof(UserMapperProfile).Assembly);
+
 builder.Services.AddOperationResult(options =>
 {
     options.ErrorResponseFormat = ResultErrorResponseFormat.List;
 });
 
-builder.Services.AddSimpleAuthentication(builder.Configuration);
+builder.Services.ConfigureValidation(options =>
+{
+    options.ErrorResponseFormat = ValidationErrorResponseFormat.List;
+});
+
+builder.Services.AddSimpleAuthentication(builder.Configuration, addAuthorizationServices: false);
+builder.Services.AddFluentEmail(email.EmailAddress).WithSendinblue();
 
 if (swagger.Enabled)
 {
@@ -60,6 +96,48 @@ if (swagger.Enabled)
         options.AddAcceptLanguageHeader();
     });
 }
+
+builder.Services.AddScoped<IUserService, HttpUserService>();
+builder.Services.AddScoped<IAuthorizationHandler, UserActiveHandler>();
+
+builder.Services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
+builder.Services.AddAuthorization(options =>
+{
+    var policyBuilder = new AuthorizationPolicyBuilder().RequireAuthenticatedUser();
+    policyBuilder.Requirements.Add(new UserActiveRequirement());
+
+    options.DefaultPolicy = policyBuilder.Build();
+
+    options.AddPolicy("UserActive", policy =>
+    {
+        policy.RequireRole(RoleNames.User);
+        policy.Requirements.Add(new UserActiveRequirement());
+    });
+});
+
+builder.Services.AddScoped<IQRCodeGeneratorService, QRCodeGeneratorService>();
+builder.Services.AddScoped(_ => new QRCodeGenerator());
+
+var connectionString = builder.Configuration.GetConnectionString("SqlConnection");
+builder.Services.AddSqlServer<ApplicationDbContext>(connectionString, options => options.EnableRetryOnFailure(10, TimeSpan.FromSeconds(2), null));
+
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireDigit = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
+
+builder.Services.Scan(scan => scan.FromAssemblyOf<IdentityService>()
+    .AddClasses(classes => classes.InNamespaceOf<IdentityService>())
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
 
 var app = builder.Build();
 app.Environment.ApplicationName = settings.ApplicationName;
