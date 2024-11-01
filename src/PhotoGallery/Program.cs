@@ -1,4 +1,7 @@
 using System.Text.Json.Serialization;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -14,6 +17,7 @@ using PhotoGallery.Authentication.Requirements;
 using PhotoGallery.BusinessLayer.Mapping;
 using PhotoGallery.BusinessLayer.Services;
 using PhotoGallery.BusinessLayer.Settings;
+using PhotoGallery.BusinessLayer.Validations;
 using PhotoGallery.Contracts;
 using PhotoGallery.DataAccessLayer;
 using PhotoGallery.Extensions;
@@ -69,6 +73,12 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 builder.Services.AddAutoMapper(typeof(UserMapperProfile).Assembly);
+builder.Services.AddValidatorsFromAssemblyContaining<NewCommentRequestValidator>();
+
+builder.Services.AddFluentValidationAutoValidation(options =>
+{
+    options.DisableDataAnnotationsValidation = true;
+});
 
 builder.Services.AddOperationResult(options =>
 {
@@ -97,6 +107,10 @@ if (swagger.Enabled)
         options.AddSimpleAuthentication(builder.Configuration);
         options.AddDefaultResponse();
         options.AddAcceptLanguageHeader();
+    })
+    .AddFluentValidationRulesToSwagger(options =>
+    {
+        options.SetNotNullableIfMinLengthGreaterThenZero = true;
     });
 }
 
