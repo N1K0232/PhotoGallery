@@ -29,7 +29,7 @@ using ResultErrorResponseFormat = OperationResults.AspNetCore.Http.ErrorResponse
 using ValidationErrorResponseFormat = MinimalHelpers.Validation.ErrorResponseFormat;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddJsonFile("appsettings.local.json", true, true);
+builder.Configuration.AddJsonFile("appsettings.local.json", true,)
 
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
 {
@@ -123,6 +123,7 @@ builder.Services.AddScoped(_ => new QRCodeGenerator());
 var connectionString = builder.Configuration.GetConnectionString("SqlConnection");
 builder.Services.AddSqlServer<ApplicationDbContext>(connectionString, options => options.EnableRetryOnFailure(10, TimeSpan.FromSeconds(2), null));
 
+builder.Services.AddScoped<IApplicationDbContext>(services => services.GetRequiredService<ApplicationDbContext>());
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
     options.User.RequireUniqueEmail = true;
