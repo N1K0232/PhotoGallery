@@ -71,6 +71,7 @@
     <Build Include="dbo\Tables\AspNetUsers.sql" />
     <Build Include="dbo\Tables\DataProtectionKeys.sql" />
     <Build Include="dbo\Tables\Images.sql" />
+    <Build Include="dbo\Tables\Comments.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PhotoGallery.Database.publish.xml" />
